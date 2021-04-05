@@ -9,7 +9,9 @@ import { Satellite } from './satellite';
 export class AppComponent {
   title = 'orbit-report';
   sourceList: Satellite[];
+  displayList: Satellite[];
   constructor() {
+    this.displayList = [];
     this.sourceList = [];
     let satellitesUrl = 'https://handlers.education.launchcode.org/static/satellites.json';
 
@@ -18,13 +20,26 @@ export class AppComponent {
 
         let fetchedSatellites = data.satellites;
         for (let i = 0; i < fetchedSatellites.length; i++) {
-          new Satellite(fetchedSatellites[i].name, fetchedSatellites[i].type, fetchedSatellites[i].launchDate, fetchedSatellites[i].orbitType, fetchedSatellites[i].operational)
-          this.sourceList.push(fetchedSatellites[i]);
+          let satellites = new Satellite(fetchedSatellites[i].name, fetchedSatellites[i].type, fetchedSatellites[i].launchDate, fetchedSatellites[i].orbitType, fetchedSatellites[i].operational)
+          this.sourceList.push(satellites);
         }
-        console.log(fetchedSatellites);
+        this.displayList = this.sourceList.slice(0);
       }.bind(this));
     }.bind(this));
   }
+
+  search(searchTerm: string): void {
+    let matchingSatellites: Satellite[] = [];
+    searchTerm = searchTerm.toLocaleLowerCase();
+    for (let i = 0; i < this.sourceList.length; i++) {
+      let name = this.sourceList[i].name.toLowerCase();
+      if (name.indexOf(searchTerm) >= 0) {
+        matchingSatellites.push(this.sourceList[i]);
+      }
+    }
+    this.displayList = matchingSatellites;
+  }
+
 }
 
 //   constructor() {
